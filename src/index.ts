@@ -26,11 +26,11 @@ function build(reports:ParsedReport[],options:Omit<NormalizeOptions,'format'>,ar
   const hasUsable=reports.some(r=>r.status==='completed'||r.status==='partial');
   const status:Evidence['execution']['status']=allComplete?'completed':hasUsable?'partial':reports.some(r=>r.status==='error')?'error':'missing';
   const result:Evidence['execution']['result']=failure?'fail':allComplete&&reports.every(r=>r.result==='pass')?'pass':'unknown';
-  const input:EvidenceInput={tool:{name:'zof-ci-evidence',version:'0.1.0'},type:'ci',execution:{status,result},tests,findings:[...findings,...warnings],artifacts,extensions:{'org.zof.ci':{reports:reports.length,warnings:warnings.length}},...readMetadata(options.metadata)};
+  const input:EvidenceInput={tool:{name:'zof-ci-evidence',version:'0.1.1'},type:'ci',execution:{status,result},tests,findings:[...findings,...warnings],artifacts,extensions:{'org.zof.ci':{reports:reports.length,warnings:warnings.length}},...readMetadata(options.metadata)};
   if(options.source!==undefined)input.source=options.source;if(options.id!==undefined)input.id=options.id;if(options.createdAt!==undefined)input.createdAt=options.createdAt;
   return createEvidence(input);
  } catch {
-  return createEvidence({tool:{name:'zof-ci-evidence',version:'0.1.0'},type:'ci',execution:{status:'error',result:'unknown'},findings:[{id:'invalid-output',severity:'info',message:'Input or combined output exceeds the supported evidence contract.'}]});
+  return createEvidence({tool:{name:'zof-ci-evidence',version:'0.1.1'},type:'ci',execution:{status:'error',result:'unknown'},findings:[{id:'invalid-output',severity:'info',message:'Input or combined output exceeds the supported evidence contract.'}]});
  }
 }
 function parse(input:string|Buffer,format:NormalizeOptions['format']):ParsedReport {

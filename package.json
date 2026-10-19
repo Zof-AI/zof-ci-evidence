@@ -1,6 +1,6 @@
 {
   "name": "@zof-ai/ci-evidence",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Bounded offline CI test and analysis evidence normalization",
   "type": "module",
   "main": "./dist/index.js",
@@ -56,7 +56,7 @@
     "typescript": "5.9.3"
   },
   "dependencies": {
-    "@zof-ai/evidence-spec": "0.1.0",
+    "@zof-ai/evidence-spec": "0.1.1",
     "saxes": "6.0.0"
   }
 }
