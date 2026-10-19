@@ -1,0 +1,1 @@
+<testsuite tests="2" failures="1"><testcase name="addition"/><testcase name="division"><failure message="token=synthetic-failure-secret">raw application logs never copied</failure></testcase></testsuite>

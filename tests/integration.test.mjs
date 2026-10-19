@@ -1,0 +1,15 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtemp, mkdir, writeFile, symlink, rm } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { normalizeArtifacts, MAX_REPORT_BYTES } from '../dist/index.js';
+import { validateEvidence } from '@zof-ai/evidence-spec';
+const fixture=async fn=>{const root=await mkdtemp(path.join(tmpdir(),'zof-ci-'));try{await writeFile(path.join(root,'pass.xml'),'<testsuite tests="1"><testcase name="passes"/></testsuite>');await fn(root)}finally{await rm(root,{recursive:true,force:true})}};
+test('combines valid and missing reports as partial with attribution',()=>fixture(async root=>{const e=await normalizeArtifacts({root,files:[{path:'pass.xml',format:'junit'},{path:'missing.xml',format:'junit'}],source:{repository:'example/project',commit:'abc'}});assert.deepEqual(e.execution,{status:'partial',result:'unknown'});assert.equal(e.tests.length,1);assert.equal(e.artifacts.length,1);assert.match(e.artifacts[0].sha256,/^[a-f0-9]{64}$/);assert.equal(e.source.repository,'example/project');assert.equal(validateEvidence(e).valid,true);}));
+test('missing files and empty selection are missing',()=>fixture(async root=>{for(const files of [[],[{path:'absent.xml',format:'junit'}]])assert.deepEqual((await normalizeArtifacts({root,files})).execution,{status:'missing',result:'unknown'});}));
+test('traversal, symlink escapes, URLs and archive filenames rejected',()=>fixture(async root=>{await symlink(path.join(root,'pass.xml'),path.join(root,'linked.xml'));for(const name of ['../outside.xml','linked.xml','https://example.invalid/private','x%2fy','pass.xml.gz']){const e=await normalizeArtifacts({root,files:[{path:name,format:'junit'}]});assert.equal(e.execution.status,'error');assert.equal(e.artifacts.length,0);assert.doesNotMatch(JSON.stringify(e),/example.invalid/);}}));
+test('ancestor symlink and nonregular files rejected',()=>fixture(async root=>{await mkdir(path.join(root,'dir'));await symlink(root,path.join(root,'dirlink'));for(const p of ['dirlink/pass.xml','dir'])assert.equal((await normalizeArtifacts({root,files:[{path:p,format:'junit'}]})).execution.status,'error');}));
+test('oversized selected input rejected',()=>fixture(async root=>{await writeFile(path.join(root,'large.json'),Buffer.alloc(MAX_REPORT_BYTES+1));assert.equal((await normalizeArtifacts({root,files:[{path:'large.json',format:'json'}]})).execution.status,'error');}));
+test('report count bounded',()=>fixture(async root=>assert.equal((await normalizeArtifacts({root,files:Array.from({length:33},()=>({path:'pass.xml',format:'junit'}))})).execution.status,'error')));
+test('total imported bytes bounded',()=>fixture(async root=>{await writeFile(path.join(root,'padded.xml'),'<testsuite><testcase name="x"/></testsuite>'+' '.repeat(1500000));const e=await normalizeArtifacts({root,files:Array.from({length:3},()=>({path:'padded.xml',format:'junit'}))});assert.deepEqual(e.execution,{status:'partial',result:'unknown'});assert.equal(e.tests.length,2);}));

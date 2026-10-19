@@ -1,0 +1,1 @@
+{"status":"completed","checkedRules":2,"findings":[{"id":"no-eval","severity":"high","message":"Unsafe evaluation detected","path":"src/parser.ts","line":5}]}

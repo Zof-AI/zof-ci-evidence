@@ -1,0 +1,1 @@
+<testsuites tests="2" failures="0"><testsuite tests="2"><testcase name="addition" time="0.002"/><testcase name="division" time="0.003"/></testsuite></testsuites>
