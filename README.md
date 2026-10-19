@@ -20,7 +20,7 @@ npm test
 
 The bootstrap downloads only the exact `v0.1.0` dependency assets from [GitHub Releases](https://github.com/Zof-AI/zof-ci-evidence/releases), as listed in `scripts/release-dependencies.json`, verifies SHA256 and byte size, and adds them to the npm cache. It does not extract archives, run package scripts, collect application data, or send credentials. Downloads require the explicit flag and follow only HTTPS GitHub asset redirects. Installation then fetches ordinary third-party dependencies from npm. Use a writable npm cache; set `npm_config_cache` consistently for both commands if needed. An unavailable asset, changed hash, or oversized response stops installation.
 
-GitHub source and release artifacts are the initial distribution channel. These instructions do not claim that `@zofai` packages are published on npm or that the VS Code extension is listed in Marketplace.
+GitHub source and release artifacts are the initial distribution channel. These instructions do not claim that `@zof-ai` packages are published on npm or that the VS Code extension is listed in Marketplace.
 <!-- ZOF_RELEASE_INSTALL_END -->
 
 ## Build and run
@@ -40,7 +40,7 @@ The JUnit example exits 0; partial JSON exits 2; the static finding exits 1. The
 ## Library
 
 ```js
-import { normalizeArtifacts } from '@zofai/ci-evidence';
+import { normalizeArtifacts } from '@zof-ai/ci-evidence';
 const evidence = await normalizeArtifacts({
   root: './downloaded-reports',
   files: [{ path: 'junit.xml', format: 'junit' }],
@@ -49,7 +49,7 @@ const evidence = await normalizeArtifacts({
 });
 ```
 
-`normalizeReport(textOrBuffer, {format, source?, metadata?, id?, createdAt?})` imports one in-memory report. `normalizeArtifacts` imports selected files and combines results. Both return Evidence 1.0.0. Use `serializeEvidence` from `@zofai/evidence-spec` before writing evidence after modifications.
+`normalizeReport(textOrBuffer, {format, source?, metadata?, id?, createdAt?})` imports one in-memory report. `normalizeArtifacts` imports selected files and combines results. Both return Evidence 1.0.0. Use `serializeEvidence` from `@zof-ai/evidence-spec` before writing evidence after modifications.
 
 GitHub Actions users can pass already-downloaded report paths from their workflow or use `normalizeArtifacts` from a JavaScript action. This package never downloads artifacts, contacts GitHub, reads credentials, executes tests or uploads source. Callers are responsible for collecting reports from trusted jobs and checking provenance.
 

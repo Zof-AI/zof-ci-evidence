@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { gzipSync } from 'node:zlib';
 import { normalizeReport, MAX_REPORT_BYTES } from '../dist/index.js';
-import { validateEvidence } from '@zofai/evidence-spec';
+import { validateEvidence } from '@zof-ai/evidence-spec';
 const fixture=n=>readFileSync(new URL(`fixtures/${n}`,import.meta.url));
 const norm=(file,format)=>normalizeReport(fixture(file),{format,id:'fixture',createdAt:'2026-10-18T12:00:00Z'});
 for(const [file,format,status,result] of [['success.xml','junit','completed','pass'],['failed.xml','junit','completed','fail'],['partial.xml','junit','partial','unknown'],['missing.json','json','missing','unknown'],['malformed.xml','junit','error','unknown'],['invalid.json','json','error','unknown'],['credentials.json','json','completed','pass'],['xxe.xml','junit','error','unknown']])test(`acceptance: ${file}`,()=>{const e=norm(file,format);assert.equal(validateEvidence(e).valid,true);assert.deepEqual(e.execution,{status,result});assert.doesNotMatch(JSON.stringify(e),/synthetic-|example.invalid|raw application logs/);});

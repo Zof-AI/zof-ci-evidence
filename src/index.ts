@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { TextDecoder } from 'node:util';
-import { createEvidence, safeReadFile, redactText, SafeInputError, assertBounded } from '@zofai/evidence-spec';
-import type { Evidence, EvidenceInput, Artifact } from '@zofai/evidence-spec';
+import { createEvidence, safeReadFile, redactText, SafeInputError, assertBounded } from '@zof-ai/evidence-spec';
+import type { Evidence, EvidenceInput, Artifact } from '@zof-ai/evidence-spec';
 import { parseGenericJson, parseJUnit, parseStaticJson } from './parsers.js';
 import type { ArtifactOptions, NormalizeOptions, ParsedReport } from './types.js';
 export * from './types.js';
