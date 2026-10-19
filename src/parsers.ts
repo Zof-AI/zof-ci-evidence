@@ -44,7 +44,7 @@ export function parseStaticJson(text:string):ParsedReport {
 export function parseJUnit(text:string):ParsedReport {
  if(/<!\s*(?:DOCTYPE|ENTITY)\b/i.test(text))throw new SafeInputError('XML_DTD','XML document types and entities are prohibited.');
  const tests:TestResult[]=[];const warnings:string[]=[];
- const stack:Array<{name:string;start:number;label?:string;expected?:number;failures?:number;errors?:number}>=[];
+ const stack:Array<{name:string;start:number;label?:string;expected?:number;failures?:number;errors?:number;skipped?:number;disabled?:number}>=[];
  let current:TestResult|undefined,roots=0,partial=false,knownFailure=false;
  const parser=new SaxesParser({xmlns:false});
  const attrCount=(v:string|undefined):number|undefined=>{if(v===undefined)return; if(!/^\d{1,6}$/.test(v))return fail();return count(Number(v));};
@@ -58,11 +58,11 @@ export function parseJUnit(text:string):ParsedReport {
   const name=node.name;const parent=stack.at(-1)?.name;
   if(!parent){if(++roots!==1||!['testsuite','testsuites'].includes(name))return fail();}
   else if(!allowed[parent]?.includes(name))return fail();
-  const entry:{name:string;start:number;label?:string;expected?:number;failures?:number;errors?:number}={name,start:tests.length};
+  const entry:{name:string;start:number;label?:string;expected?:number;failures?:number;errors?:number;skipped?:number;disabled?:number}={name,start:tests.length};
   if(name==='testsuite'||name==='testsuites'){
    if(typeof node.attributes.name==='string'&&node.attributes.name)entry.label=string(node.attributes.name,250);
-   const expected=attrCount(node.attributes.tests); const failures=attrCount(node.attributes.failures);const errors=attrCount(node.attributes.errors);
-   if(expected!==undefined)entry.expected=expected;if(failures!==undefined)entry.failures=failures;if(errors!==undefined)entry.errors=errors;
+   const expected=attrCount(node.attributes.tests); const failures=attrCount(node.attributes.failures);const errors=attrCount(node.attributes.errors);const skipped=attrCount(node.attributes.skipped);const disabled=attrCount(node.attributes.disabled);
+   if(expected!==undefined)entry.expected=expected;if(failures!==undefined)entry.failures=failures;if(errors!==undefined)entry.errors=errors;if(skipped!==undefined)entry.skipped=skipped;if(disabled!==undefined)entry.disabled=disabled;
    if((failures??0)>0||(errors??0)>0)knownFailure=true;
   }
   if(name==='testcase'){
@@ -79,7 +79,7 @@ export function parseJUnit(text:string):ParsedReport {
   if(entry.name==='testcase'){if(!current)return fail();tests.push(current);current=undefined;}
   if(entry.name==='testsuite'||entry.name==='testsuites'){
    const cases=tests.slice(entry.start);
-   if((entry.expected!==undefined&&entry.expected!==cases.length)||(entry.failures!==undefined&&entry.failures!==cases.filter(t=>t.status==='failed').length)||(entry.errors!==undefined&&entry.errors!==cases.filter(t=>t.status==='error').length))partial=true;
+   if((entry.expected!==undefined&&entry.expected!==cases.length)||(entry.failures!==undefined&&entry.failures!==cases.filter(t=>t.status==='failed').length)||(entry.errors!==undefined&&entry.errors!==cases.filter(t=>t.status==='error').length)||(entry.skipped!==undefined&&entry.skipped!==cases.filter(t=>t.status==='skipped').length)||(entry.disabled!==undefined&&entry.disabled!==cases.filter(t=>t.status==='skipped').length))partial=true;
   }
  });
  try {parser.write(text).close();}catch(error){if(error instanceof SafeInputError)throw error;return fail();}
