@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { parseArgs } from 'node:util';
-import { serializeEvidence } from '@zof-ai/evidence-spec';
+import { serializeEvidence } from '@zofai/evidence-spec';
 import { normalizeArtifacts } from './index.js';
 import type { ReportFormat } from './types.js';
 try {

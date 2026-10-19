@@ -1,4 +1,4 @@
-import type { Evidence } from '@zof-ai/evidence-spec';
+import type { Evidence } from '@zofai/evidence-spec';
 export type ReportFormat = 'junit'|'json'|'static-json';
 export interface NormalizeOptions { format: ReportFormat; source?: Evidence['source']; metadata?: unknown; id?: string; createdAt?: string }
 export interface ArtifactInput { path: string; format: ReportFormat }

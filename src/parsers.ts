@@ -1,6 +1,6 @@
 import { SaxesParser } from 'saxes';
-import { parseJson, redactText, SafeInputError, assertSafeRelativePath } from '@zof-ai/evidence-spec';
-import type { Evidence, Finding, TestResult } from '@zof-ai/evidence-spec';
+import { parseJson, redactText, SafeInputError, assertSafeRelativePath } from '@zofai/evidence-spec';
+import type { Evidence, Finding, TestResult } from '@zofai/evidence-spec';
 import type { ParsedReport } from './types.js';
 const fail=():never=>{throw new SafeInputError('INVALID_REPORT','Report does not match the supported format.');};
 function object(value: unknown): Record<string,unknown> { if(!value||typeof value!=='object'||Array.isArray(value)) return fail();return value as Record<string,unknown>; }

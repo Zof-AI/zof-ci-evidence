@@ -4,7 +4,7 @@ import { mkdtemp, mkdir, writeFile, symlink, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { normalizeArtifacts, MAX_REPORT_BYTES } from '../dist/index.js';
-import { validateEvidence } from '@zof-ai/evidence-spec';
+import { validateEvidence } from '@zofai/evidence-spec';
 const fixture=async fn=>{const root=await mkdtemp(path.join(tmpdir(),'zof-ci-'));try{await writeFile(path.join(root,'pass.xml'),'<testsuite tests="1"><testcase name="passes"/></testsuite>');await fn(root)}finally{await rm(root,{recursive:true,force:true})}};
 test('combines valid and missing reports as partial with attribution',()=>fixture(async root=>{const e=await normalizeArtifacts({root,files:[{path:'pass.xml',format:'junit'},{path:'missing.xml',format:'junit'}],source:{repository:'example/project',commit:'abc'}});assert.deepEqual(e.execution,{status:'partial',result:'unknown'});assert.equal(e.tests.length,1);assert.equal(e.artifacts.length,1);assert.match(e.artifacts[0].sha256,/^[a-f0-9]{64}$/);assert.equal(e.source.repository,'example/project');assert.equal(validateEvidence(e).valid,true);}));
 test('missing files and empty selection are missing',()=>fixture(async root=>{for(const files of [[],[{path:'absent.xml',format:'junit'}]])assert.deepEqual((await normalizeArtifacts({root,files})).execution,{status:'missing',result:'unknown'});}));
