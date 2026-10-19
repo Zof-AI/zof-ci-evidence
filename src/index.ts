@@ -49,7 +49,7 @@ function parse(input:string|Buffer,format:NormalizeOptions['format']):ParsedRepo
 export function normalizeReport(input:string|Buffer,options:NormalizeOptions):Evidence {
  return build([parse(input,options.format)],options);
 }
-/** Import explicitly selected, already-downloaded files inside a stable artifact staging root. */
+/** Import explicitly selected, already-downloaded files inside an approved artifact staging root. */
 export async function normalizeArtifacts(options:ArtifactOptions):Promise<Evidence> {
  if(!Array.isArray(options.files)||options.files.length>MAX_REPORTS)return build([errorReport('REPORT_LIMIT')],options);
  const reports:ParsedReport[]=[],artifacts:Artifact[]=[];let total=0;
@@ -61,7 +61,7 @@ export async function normalizeArtifacts(options:ArtifactOptions):Promise<Eviden
    const report=parse(buffer,item.format);reports.push(report);
    // Metadata references only; never embed the report, failure bodies, properties, logs or environment.
    if(report.status==='completed'||report.status==='partial')artifacts.push({name:`report-${reports.length}`,path:redactText(item.path),sizeBytes:buffer.length,sha256:createHash('sha256').update(buffer).digest('hex'),mediaType:item.format==='junit'?'application/xml':'application/json'});
-  }catch(error){const code=error instanceof SafeInputError?error.code:'INVALID_REPORT';reports.push(errorReport(code,code==='FILE_READ'));}
+  }catch(error){const code=error instanceof SafeInputError?error.code:'INVALID_REPORT';reports.push(errorReport(code,code==='FILE_MISSING'));}
  }
  if(!reports.length)reports.push(errorReport('NO_REPORTS',true));
  return build(reports,options,artifacts);

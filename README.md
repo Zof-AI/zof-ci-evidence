@@ -2,11 +2,30 @@
 
 Normalize explicitly selected local CI reports into portable Evidence 1.0.0. Works offline without a Zof account. Imports JUnit XML, generic test JSON and the documented static-analysis JSON format. Invalid or incomplete reports produce honest error, missing or partial evidence.
 
-This is an unpublished 0.1.0 release candidate. Proposed npm names and repository URLs await approval. Public installation is blocked until the shared evidence dependency is published.
+Version 0.1.0 is prepared under the Apache-2.0 license. Use the GitHub source installation below; npm registry publication is not claimed.
+
+<!-- ZOF_RELEASE_INSTALL_START -->
+## Install from GitHub source
+
+Requires Node.js 22 or 24, npm, and Git. Filesystem operations require Linux or macOS with Python 3.10 or newer; Windows file operations fail closed. Clone this repository and explicitly prepare its reviewed release dependencies:
+
+```sh
+git clone https://github.com/Zof-AI/zof-ci-evidence.git
+cd zof-ci-evidence
+node scripts/bootstrap.mjs --allow-network
+npm ci --ignore-scripts --prefer-offline
+npm run build
+npm test
+```
+
+The bootstrap downloads only the exact `v0.1.0` dependency assets from [GitHub Releases](https://github.com/Zof-AI/zof-ci-evidence/releases), as listed in `scripts/release-dependencies.json`, verifies SHA256 and byte size, and adds them to the npm cache. It does not extract archives, run package scripts, collect application data, or send credentials. Downloads require the explicit flag and follow only HTTPS GitHub asset redirects. Installation then fetches ordinary third-party dependencies from npm. Use a writable npm cache; set `npm_config_cache` consistently for both commands if needed. An unavailable asset, changed hash, or oversized response stops installation.
+
+GitHub source and release artifacts are the initial distribution channel. These instructions do not claim that `@zof-ai` packages are published on npm or that the VS Code extension is listed in Marketplace.
+<!-- ZOF_RELEASE_INSTALL_END -->
 
 ## Build and run
 
-Requires Node.js 22 or later. During prerelease development, install a reviewed `@zof-ai/evidence-spec` 0.1.0 tarball alongside this project's dependencies before building. The committed lock describes the intended registry artifact, which is not yet public. A release coordinator can seed an isolated npm cache from approved candidate tarballs and run `npm ci --offline --ignore-scripts`. After approved dependency publication, `npm ci --ignore-scripts` works normally.
+After the GitHub source installation above, run the examples below. The bootstrap supplies the pinned evidence-spec dependency.
 
 ```sh
 npm run build
